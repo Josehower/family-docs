@@ -1,5 +1,7 @@
 import fastify from 'fastify';
 
+require('dotenv-safe').config();
+
 const app = fastify();
 
 app.get('/', async (req) => {
