@@ -4,8 +4,8 @@ require('dotenv-safe').config();
 
 const app = fastify();
 
-app.get('/', async (req) => {
-  return await { family: `${req.protocol}://${req.hostname}/family-members` };
+app.get('/', (req) => {
+  return { family: `${req.protocol}://${req.hostname}/family-members` };
 });
 
 app.get('/family-members', () => {
