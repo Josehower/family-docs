@@ -1,5 +1,5 @@
 import cookie, { FastifyCookieOptions } from '@fastify/cookie';
-import fastify, { FastifyServerOptions } from 'fastify';
+import fastify from 'fastify';
 import { getFamilyMemebers } from './utils/database';
 
 const app = fastify();
@@ -19,6 +19,7 @@ app.addHook('onRequest', async (request, reply) => {
       301,
       `https://${request.headers.host}${request.raw.url}`,
     );
+    return;
   }
 
   // TODO: update this with propper session AUTH once login is implemented
