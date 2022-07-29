@@ -15,7 +15,6 @@ await app.register(cookie, {
 
 app.addHook('onRequest', async (request, reply) => {
   // TODO: update this with propper session AUTH once login is implemented
-  console.log(request.cookies.sessionToken === process.env.PROVISIONAL_TOKEN);
   if (request.cookies.sessionToken !== process.env.PROVISIONAL_TOKEN) {
     await reply.code(400).send({ error: 'Unauthorized' });
   }
