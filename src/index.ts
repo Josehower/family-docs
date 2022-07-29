@@ -2,12 +2,7 @@ import cookie, { FastifyCookieOptions } from '@fastify/cookie';
 import fastify, { FastifyServerOptions } from 'fastify';
 import { getFamilyMemebers } from './utils/database';
 
-const serverOptions =
-  process.env.NODE_ENV === 'production'
-    ? ({ https: {} } as FastifyServerOptions)
-    : undefined;
-
-const app = fastify(serverOptions);
+const app = fastify();
 
 /*
  * Fastify configuration to use cookies.
@@ -19,14 +14,21 @@ await app.register(cookie, {
 } as FastifyCookieOptions);
 
 app.addHook('onRequest', async (request, reply) => {
+  if (process.env.NODE_ENV === 'production' && request.protocol === 'http') {
+    await reply.redirect(
+      301,
+      `https://${request.headers.host}${request.raw.url}`,
+    );
+  }
+
   // TODO: update this with propper session AUTH once login is implemented
   if (request.cookies.sessionToken !== process.env.PROVISIONAL_TOKEN) {
     await reply.code(400).send({ error: 'Unauthorized' });
   }
 });
 
-app.get('/', (req) => {
-  return { family: `${req.protocol}://${req.hostname}/family-members` };
+app.get('/', (request) => {
+  return { family: `${request.protocol}://${request.hostname}/family-members` };
 });
 
 app.get('/family-members', async () => {

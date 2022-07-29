@@ -5,6 +5,9 @@ import { getFirestore } from 'firebase-admin/firestore';
 
 require('dotenv-safe').config();
 
+/*
+ * Heroku need the env Variable without single quotes ('').
+ */
 const credentialsVariable = process.env.GOOGLE_CREDENTIALS;
 if (!credentialsVariable) {
   throw new Error(
