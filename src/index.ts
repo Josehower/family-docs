@@ -14,13 +14,15 @@ await app.register(cookie, {
 } as FastifyCookieOptions);
 
 app.addHook('onRequest', async (request, reply) => {
-  if (process.env.NODE_ENV === 'production' && request.protocol === 'http') {
-    await reply.redirect(
-      301,
-      `https://${request.headers.host}${request.raw.url}`,
-    );
-    return;
-  }
+  console.log(request.protocol === 'http');
+  console.log(request.protocol);
+  // if (process.env.NODE_ENV === 'production' && request.protocol === 'http') {
+  //   await reply.redirect(
+  //     301,
+  //     `https://${request.headers.host}${request.raw.url}`,
+  //   );
+  //   return;
+  // }
 
   // TODO: update this with propper session AUTH once login is implemented
   if (request.cookies.sessionToken !== process.env.PROVISIONAL_TOKEN) {
