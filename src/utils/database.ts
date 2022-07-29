@@ -5,14 +5,14 @@ import { getFirestore } from 'firebase-admin/firestore';
 
 require('dotenv-safe').config();
 
-const creadentialsVariable = process.env['GOOGLE_CREDENTIALS'];
-if (!creadentialsVariable) {
+const credentialsVariable = process.env.GOOGLE_CREDENTIALS;
+if (!credentialsVariable) {
   throw new Error(
     'The $GOOGLE_CREDENTIALS environment variable was not found!',
   );
 }
 
-const firestoreCredentials = JSON.parse(creadentialsVariable);
+const firestoreCredentials = JSON.parse(credentialsVariable);
 
 const firestoreClient = initializeApp({
   credential: cert(firestoreCredentials),
