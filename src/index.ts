@@ -22,7 +22,7 @@ app.addHook('onRequest', async (request, reply) => {
 
 app.get('/', (request) => {
   return {
-    family: `${
+    'family-members': `${
       process.env.NODE_ENV === 'production' ? 'https' : request.protocol
     }://${request.hostname}/family-members`,
   };
