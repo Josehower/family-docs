@@ -1,6 +1,6 @@
 import cookie, { FastifyCookieOptions } from '@fastify/cookie';
 import fastify from 'fastify';
-import { getFamilyMemebers } from './utils/database';
+import { getFamilyMembers } from './utils/database';
 
 const app = fastify();
 
@@ -14,7 +14,7 @@ await app.register(cookie, {
 } as FastifyCookieOptions);
 
 app.addHook('onRequest', async (request, reply) => {
-  // TODO: update this with propper session AUTH once login is implemented
+  // TODO: update this with proper session AUTH once login is implemented
   if (request.cookies.sessionToken !== process.env.PROVISIONAL_TOKEN) {
     await reply.code(400).send({ error: 'Unauthorized' });
   }
@@ -29,7 +29,7 @@ app.get('/', (request) => {
 });
 
 app.get('/family-members', async () => {
-  return await getFamilyMemebers();
+  return await getFamilyMembers();
 });
 
 app.listen(

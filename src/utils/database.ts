@@ -24,7 +24,7 @@ const firestoreClient = initializeApp({
 
 const db = getFirestore(firestoreClient);
 
-export async function getFamilyMemebers() {
+export async function getFamilyMembers() {
   const snapshot = await db.collection('family-members').get();
 
   const familyMemebers = snapshot.docs.map((doc) => {
