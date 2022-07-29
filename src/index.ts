@@ -1,8 +1,13 @@
 import cookie, { FastifyCookieOptions } from '@fastify/cookie';
-import fastify from 'fastify';
+import fastify, { FastifyServerOptions } from 'fastify';
 import { getFamilyMemebers } from './utils/database';
 
-const app = fastify();
+const serverOptions =
+  process.env.NODE_ENV === 'production'
+    ? ({ https: {} } as FastifyServerOptions)
+    : undefined;
+
+const app = fastify(serverOptions);
 
 /*
  * Fastify configuration to use cookies.
