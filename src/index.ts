@@ -14,10 +14,6 @@ import {
 
 const app = fastify();
 
-/*
- * Fastify configuration to use cookies.
- * https://github.com/fastify/fastify-cookie#example
- */
 await app.register(cookie, {
   secret: process.env.COOKIE_SECRET,
   parseOptions: {},
@@ -25,11 +21,10 @@ await app.register(cookie, {
 
 await app.register(staticServer, {
   root: path.join(__dirname, 'public'),
-  prefix: '/public/', // optional: default '/'
+  prefix: '/public/',
 });
 
 app.addHook('onRequest', async (request, reply) => {
-  // TODO: update this with proper session AUTH once login is implemented
   if (
     request.routerPath !== '/login' &&
     request.routerPath !== '/logout' &&
