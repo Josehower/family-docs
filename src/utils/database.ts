@@ -1,7 +1,12 @@
-// eslint-disable-next-line import/no-unresolved -- ESLint can't find the module
+/* eslint-disable import/no-unresolved -- necessary for firebase-admin  */
+import crypto from 'node:crypto';
+import bcrypt from 'bcryptjs';
 import { cert, initializeApp } from 'firebase-admin/app';
-// eslint-disable-next-line import/no-unresolved -- ESLint can't find the module
-import { getFirestore } from 'firebase-admin/firestore';
+import {
+  DocumentSnapshot,
+  getFirestore,
+  QuerySnapshot,
+} from 'firebase-admin/firestore';
 
 require('dotenv-safe').config();
 
@@ -15,33 +20,81 @@ if (!credentialsVariable) {
   );
 }
 
-const firestoreCredentials = JSON.parse(credentialsVariable);
+const firebaseCredentials = JSON.parse(credentialsVariable);
 
-const firestoreClient = initializeApp({
-  credential: cert(firestoreCredentials),
-  projectId: firestoreCredentials.project_id,
+const firebaseClient = initializeApp({
+  credential: cert(firebaseCredentials),
+  projectId: firebaseCredentials.project_id,
 });
 
-const db = getFirestore(firestoreClient);
+const db = getFirestore(firebaseClient);
+
+type FamilyMember = { name: string; age: number };
 
 export async function getFamilyMembers() {
-  const snapshot = await db.collection('family-members').get();
+  const snapshot = (await db
+    .collection('family-members')
+    .get()) as QuerySnapshot<FamilyMember>;
 
-  const familyMemebers = snapshot.docs.map((doc) => {
+  const familyMembers = snapshot.docs.map((doc) => {
     return { id: doc.id, ...doc.data() };
   });
 
-  return familyMemebers;
+  return familyMembers;
 }
 
-export function getSessionByValidToken() {
-  // TODO: validate session token
+export async function createSession() {
+  const sessionToken = crypto.randomBytes(100).toString('base64');
+  const docRef = db.collection('sessions').doc('admin');
+
+  const newSession = {
+    token: sessionToken,
+    // set 6 hours long session token
+    expiryTimestamp: Date.now() + 21600000,
+  };
+
+  await docRef.set(newSession);
+
+  return newSession;
 }
 
-export function createSession() {
-  //  TODO: create session on database doc
+export async function deleteSession() {
+  const docRef = db.collection('sessions').doc('admin');
+  const deletedSession = (await docRef.get()).data();
+
+  const newSession = {
+    token: '',
+    // set 6 hours long session token
+    expiryTimestamp: Date.now(),
+  };
+
+  await docRef.set(newSession);
+
+  return deletedSession;
 }
 
-export function validateCredentialsPassword() {
-  //  TODO: validate credentials
+export async function isTokenValid(token?: string) {
+  if (!token) return false;
+
+  const snapshot = (await db.collection('sessions').get()) as QuerySnapshot<{
+    expiryTimestamp: number;
+    token: string;
+  }>;
+
+  return snapshot.docs.some((doc) => {
+    return (
+      token === doc.data().token && Date.now() < doc.data().expiryTimestamp
+    );
+  });
+}
+
+export async function isPasswordValid(password: string) {
+  if (!password) return false;
+
+  const docRef = (await db
+    .collection('credentials')
+    .doc(process.env.CREDENTIALS_DOC_ID!)
+    .get()) as DocumentSnapshot<{ passwordHash: string }>;
+
+  return await bcrypt.compare(password, docRef.data()!.passwordHash);
 }

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>family-docs - Login</title>
+  </head>
+  <body>
+    <input id="password" type="password" />
+    <button onclick="login()">login</button>
+  </body>
+  <script>
+    async function login() {
+      const passwordInput = document.querySelector('#password').value;
+      const response = await fetch('/login', {
+        method: 'POST',
+        body: JSON.stringify({ password: passwordInput }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.status === 200) {
+        window.location.href = '/';
+      }
+    }
+  </script>
+</html>

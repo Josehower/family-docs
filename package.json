@@ -6,13 +6,19 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "esbuild src/index.ts --bundle --outfile=dist/family-docs.mjs --platform=node --target=node16.8 --format=esm --banner:js=\"import { createRequire as topLevelCreateRequire } from 'module'; const require = topLevelCreateRequire(import.meta.url); import { dirname } from 'node:path'; import { fileURLToPath } from 'node:url'; const __filename = fileURLToPath(import.meta.url); const __dirname = dirname(__filename); \"",
-    "dev": "nodemon --watch '*/**.ts' -e ts --exec 'yarn build && node dist/family-docs.mjs'",
+    "serve-static": " cp -R src/public dist",
+    "build": "esbuild src/index.ts --bundle --outfile=dist/family-docs.mjs --platform=node --target=node16.8 --format=esm --banner:js=\"import { createRequire as topLevelCreateRequire } from 'module'; const require = topLevelCreateRequire(import.meta.url); import { dirname } from 'node:path'; import { fileURLToPath } from 'node:url'; const __filename = fileURLToPath(import.meta.url); const __dirname = dirname(__filename); \" && yarn serve-static",
+    "dev": "nodemon --watch src -e \"ts, html\" --exec 'yarn build && node dist/family-docs.mjs'",
     "start": "NODE_ENV=production node dist/family-docs.mjs"
   },
   "dependencies": {
     "@fastify/cookie": "^7.0.0",
+    "@fastify/static": "^6.4.1",
     "@next/eslint-plugin-next": "12.1.6",
+    "@types/bcryptjs": "^2.4.2",
+    "@types/cookie": "^0.5.1",
+    "bcryptjs": "^2.4.3",
+    "cookie": "^0.5.0",
     "dotenv-safe": "^8.2.0",
     "esbuild": "0.14.42",
     "fastify": "^4.1.0",
