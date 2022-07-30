@@ -53,6 +53,21 @@ app.get('/login', (x_req, response) => {
     .sendFile('index.html');
 });
 
+type LoginPostRequest = FastifyRequest<{ Body: { password: string } }>;
+
+app.post('/login', async (request: LoginPostRequest, response) => {
+  if (await isPasswordValid(request.body.password)) {
+    const newSession = await createSession();
+    const sessionCookie = createSerializedSessionTokenCookie(newSession.token);
+    return await response
+      .status(200)
+      .header('Set-Cookie', sessionCookie)
+      .send();
+  }
+
+  return await response.status(401).send({ error: 'Invalid password' });
+});
+
 app.get('/logout', async (x_req, response) => {
   await deleteSession();
   return response
@@ -65,21 +80,6 @@ app.get('/logout', async (x_req, response) => {
     )
     .status(200)
     .send({ message: 'Logged out' });
-});
-
-type LoginRequest = FastifyRequest<{ Body: { password: string } }>;
-
-app.post('/login', async (request: LoginRequest, response) => {
-  if (await isPasswordValid(request.body.password)) {
-    const newSession = await createSession();
-    const sessionCookie = createSerializedSessionTokenCookie(newSession.token);
-    return await response
-      .status(200)
-      .header('Set-Cookie', sessionCookie)
-      .send();
-  }
-
-  return await response.status(401).send({ error: 'Invalid password' });
 });
 
 app.listen(
